@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Lấy Key</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 30px;
+            border: 2px solid #e8e8e8;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            background: #ffffff;
+            max-width: 360px;
+            width: 85%;
+        }
+        h2 {
+            color: #222222;
+            margin-bottom: 10px;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .key-box {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 16px;
+            border: 2px dashed #0088cc;
+            background-color: #f4fafd;
+            color: #0088cc;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        .btn-copy {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-copy:hover {
+            background-color: #006699;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Khung Lấy Key Hệ Thống</h2>
+    <p>Key có hiệu lực trong 24h (Tự đổi mới vào ngày mai)</p>
+    <div class="key-box" id="keyDisplay">Đang tạo...</div>
+    <button class="btn-copy" onclick="copyAndRedirect()">Sao chép Key</button>
+</div>
+
+<script>
+    // Hàm băm thời gian đồng bộ mã hóa với file Lua
+    function getDailyKey() {
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let hash = 5381;
+        
+        for (let i = 0; i < dateStr.length; i++) {
+            hash = (hash * 33 + dateStr.charCodeAt(i)) % 1000000007;
+        }
+        
+        let key = "";
+        for (let i = 0; i < 9; i++) {
+            hash = (hash * 33 + i) % 1000000007;
+            let idx = hash % chars.length;
+            key += chars.charAt(idx);
+        }
+        return key;
+    }
+
+    // Hiển thị key của ngày hôm nay lên màn hình web
+    const currentKey = getDailyKey();
+    document.getElementById("keyDisplay").innerText = currentKey;
+
+    // Xử lý sao chép và chuyển hướng nhóm Telegram của bạn
+    function copyAndRedirect() {
+        const textArea = document.createElement("textarea");
+        textArea.value = currentKey;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('Lỗi sao chép', err);
+        }
+        
+        document.body.removeChild(textArea);
+        
+        // Chuyển hướng thẳng sang Telegram nhóm của bạn như yêu cầu
+        window.location.href = "https://t.me/tamnguyenmod";
+    }
+</script>
+
+</body>
+</html>
